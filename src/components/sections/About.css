@@ -1,0 +1,32 @@
+.about-container {
+  max-width: 700px;
+  line-height: 1.7;
+}
+
+.about-container h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.about-container .clock {
+  font-size: 14px;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.about-container .contact {
+  font-size: 15px;
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 15px;
+  word-spacing: 5px;
+}
+
+.about-container p {
+  font-size: 16px;
+  color: #333;
+  text-align: justify;
+}

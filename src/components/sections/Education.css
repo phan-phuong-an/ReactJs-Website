@@ -1,0 +1,17 @@
+ .education-container {
+  max-width: 700px;
+  line-height: 1.7;
+}
+
+.education-container h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.education-container p {
+  font-size: 16px;
+  color: #333;
+  text-align: justify;
+}
