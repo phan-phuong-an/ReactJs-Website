@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { sampleTasks } from './data/sampleTasks';
 import Sidebar from './components/Sidebar';
 import About from "./components/sections/About";
 import Experience from "./components/sections/Experience";
@@ -6,12 +7,16 @@ import Education from "./components/sections/Education";
 import Skills from "./components/sections/Skills";
 import Interests from "./components/sections/Interests";
 import SoftSkills from "./components/sections/SoftSkills";  
+import TodoList from "./components/sections/TodoList.js";
 import "./App.css";
+
 
 const App = () => {
   const [activeTab, setActiveTab] = useState("about");
   const [aboutEnterTime, setAboutEnterTime] = useState(null);
   const [educationElapsedSeconds, setEducationElapsedSeconds] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [tasks, setTasks] = useState(sampleTasks);
   const prevTabRef = useRef(null); 
 
   useEffect(() => { 
@@ -29,9 +34,9 @@ const App = () => {
     }
 
     prevTabRef.current = activeTab; 
-  }, [activeTab, aboutEnterTime]); 
+  }, [activeTab, aboutEnterTime]);
 
-  const renderContent = () => {
+  const renderContent = () => { 
     switch (activeTab) {
       case "about": return <About />;          
       case "experience": return <Experience />;
@@ -39,7 +44,9 @@ const App = () => {
       case "skills": return <Skills />;
       case "interests": return <Interests />;
       case "softskills": return <SoftSkills />;
-      default: return <About />;              
+      case "todoList": return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
+
+      default: return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
     }
   };
 
@@ -49,6 +56,6 @@ const App = () => {
       <div className="content">{renderContent()}</div>
     </div>
   );
-}
+};
 
 export default App;

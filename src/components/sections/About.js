@@ -9,7 +9,6 @@ export default function About() {
     let mounted = true; 
 
     const updateTime = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0)); 
       if (!mounted) return;
       setTime(new Date()); 
     };
@@ -22,12 +21,12 @@ export default function About() {
       clearInterval(id); 
     };
   }, []);
-
+ 
   return (
     <div className="about-container">
       <h1>Phan Thi Phuong An</h1>
-      <div className="clock">Current time: {time.toLocaleTimeString()}</div>
-      <ui className="contact">Ho Chi Minh   - 0776593619   - phanthiphuongan1412@gmail.com</ui>
+  <div className="clock">Current time: {time.toLocaleTimeString()}</div>
+  <div className="contact">Ho Chi Minh   - 0776593619   - phanthiphuongan1412@gmail.com</div>
       <p>
         Software engineering is the process of designing, developing, and maintaining software systems in a structured and efficient way. 
         It combines technical knowledge with problem-solving skills to create applications that meet users’ needs.

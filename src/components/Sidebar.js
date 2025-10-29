@@ -2,7 +2,7 @@ import "./Sidebar.css";
 
 export default function Sidebar({ activeTab, setActiveTab }) 
 {
-    const menus = ["about", "experience", "education", "skills", "interests", "softskills"];
+    const menus = ["about", "experience", "education", "skills", "interests", "softskills", "todoList"];
 
     return (
         <div className="sidebar">

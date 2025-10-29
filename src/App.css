@@ -12,7 +12,7 @@
   color: white; 
   padding: 20px; 
   text-align: center;
-  padding-top: 50px;
+  padding-top: 8px; 
   border-radius: 1.5%;
 
 }
@@ -22,7 +22,8 @@
   width: 120px; 
   height: 120px;
   object-fit: cover;
-  border-radius: 50%
+  border-radius: 50%;
+  margin-top: 0;
 }
 
 .sidebar ul
@@ -45,9 +46,10 @@
 
 .content {
   flex: 1;
-  padding: 70px 80px;
+  padding: 48px 40px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  align-items: stretch;
 }

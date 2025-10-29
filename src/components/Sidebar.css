@@ -3,12 +3,12 @@
     width: 250px;
     background: #A65D3F;
     padding-top: 5px;
-    color: white;
+    color: rgb(200, 109, 109);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 5px solid #ffffff50;
+    border: 2px solid #ffffffb7;
     border-radius: 1.5%;
 }
 
@@ -19,7 +19,7 @@
     object-fit: cover;
     border-radius: 50%;
     margin-bottom: 10px;
-    border:#FFD6A2 4px solid;
+    border:#89694c 4px solid;
 }
 
 .sidebar ul
@@ -47,6 +47,7 @@
 
 .sidebar li.active
 {
-    background: #733c2a;
+    background: #89694c;
     color: #FFD6A2;
+    border-radius: 50px;
 }
