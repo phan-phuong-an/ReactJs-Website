@@ -46,9 +46,10 @@
 
 .content {
   flex: 1;
-  padding: 70px 80px;
+  padding: 48px 40px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  align-items: stretch;
 }

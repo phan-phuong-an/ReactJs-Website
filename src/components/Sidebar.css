@@ -3,12 +3,12 @@
     width: 250px;
     background: #A65D3F;
     padding-top: 5px;
-    color: white;
+    color: rgb(200, 109, 109);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 5px solid #ffffffb7;
+    border: 2px solid #ffffffb7;
     border-radius: 1.5%;
 }
 
