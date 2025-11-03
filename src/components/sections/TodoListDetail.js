@@ -1,17 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './TodoList.css';
 
 export default function TodoListDetail({ task, setTasks }) {
     const [form, setForm] = useState({ title: '', description: '', list: '', due: '', tags: []});
+    const titleRef = useRef(null);
+
     useEffect(() => {
-        if (task) setForm({...task });
-        else setForm({ title: '', description: '', list: '', due: '', tags: []});
+        if (task) {
+            setForm({
+            title: task.title || '',
+            description: task.description || '',
+            list: task.list || '',
+            due: task.due || '',
+            tags: task.tags ? [...task.tags] : []
+        });
+     } else {
+            setForm({ title: '', description: '', list: '', due: '', tags: []});
+        }
     }, [task]);
 
-    if (!task) return <div className="card">Select a task</div>;
+    useEffect(() => {
+        if (task && task.editing && titleRef.current) {
+            setTimeout(() => titleRef.current.focus(), 50);
+        }
+    }, [task]);
+
+     if (!task) return <div className="card">Select a task</div>;
 
     const save = () => {
-        setTasks(prev => prev.map(t => t.id === task.id ? { ...t, ...form } : t));
+        setTasks(prev => prev.map(t => {
+            if (t.id !== task.id) return t;
+            return {
+            ...t,
+            title: form.title,
+            description: form.description,
+            list: form.list,
+            due: form.due,
+            tags: Array.isArray(form.tags) ? [...form.tags] : [],
+            editing: false
+        };
+    }));
     };
 
     const remove = () => {
@@ -21,9 +49,21 @@ export default function TodoListDetail({ task, setTasks }) {
     return (
         <div className="card detail-card">
             <h3>Task:</h3>
-            <div className="title-large">{form.title}</div>
+            <input
+                ref={titleRef}
+                className="title-input"
+                value={form.title}
+                onChange={e => setForm({...form, title: e.target.value})}
+                onKeyDown={e => { if (e.key === 'Enter') save(); }}
+                   // onBlur={() => save()}
+                placeholder="Task title"
+            />
             <label>Description</label>
-            <textarea value={form.description} onChange={e=>setForm({...form, description:e.target.value})}></textarea>
+
+            <textarea value={form.description}
+             onChange={e=>setForm({...form, description:e.target.value})}>
+            </textarea>
+
             <div className="form-controls">
                 <label htmlFor="task-list">List</label>
                 <select id="task-list" value={form.list} onChange={e=>setForm({...form, list:e.target.value})}>
@@ -39,4 +79,4 @@ export default function TodoListDetail({ task, setTasks }) {
             </div>
         </div>
     );
-}
+} 

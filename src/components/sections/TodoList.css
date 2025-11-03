@@ -136,6 +136,23 @@
 .detail-card .form-controls input[type="date"]{
     width:160px;
 }
+
+/* title input styling */
+.title-input {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+.title-input:focus {
+    outline: none;
+    border-color: #1967d2;
+    box-shadow: 0 0 0 3px rgba(25,103,210,0.08);
+}
 .detail-card .actions { 
     display:flex; 
     gap:12px; 
@@ -150,7 +167,7 @@
 .btn-primary { 
     background:#1967d2; 
     color:#fff; 
-    margin-top: 6px;
+    margin-top: 6px;    
 }
 .btn-danger { 
     background:#eee; 
