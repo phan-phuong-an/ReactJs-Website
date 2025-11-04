@@ -1,5 +1,6 @@
 import React from 'react';
 import './TodoList.css';
+import classNames from 'classnames';
 
 export default function TodoListList({ tasks, setTasks, selectedId, setSelectedId }) {
     const handleAdd = () => {
@@ -7,12 +8,13 @@ export default function TodoListList({ tasks, setTasks, selectedId, setSelectedI
         const newTask = {
             id,
             title: 'New Task',
+            description: '',
             completed: false,
             due: '',
             list: '',
             tags: [],
             editing: true
-        };
+        }; 
         setTasks(prev => [newTask, ...prev]);
         setSelectedId(id);
     };
@@ -30,11 +32,11 @@ export default function TodoListList({ tasks, setTasks, selectedId, setSelectedI
 
             <div className="items">
                 {tasks.map(t => (
-                    <div key={t.id} className={`item ${selectedId === t.id ? 'selected' : ''}`} onClick={() => setSelectedId(t.id)}>
-                        <div className={`radio ${t.completed ? 'checked' : ''}`} onClick={(e) => { e.stopPropagation(); toggleComplete(t.id); }}>
+                    <div key={t.id} className={classNames('item', { selected: selectedId === t.id })} onClick={() => setSelectedId(t.id)}>
+                        <div className={classNames('radio', { checked: t.completed })} onClick={(e) => { e.stopPropagation(); toggleComplete(t.id); }}>
                             {t.completed ? '✔' : ''}
                         </div>
-                        <div className={`title ${t.completed ? 'completed' : ''}`}>{t.title}</div>
+                        <div className={classNames('title', { completed: t.completed })}>{t.title}</div>
                         <div className="meta">
                             {t.due && <span className="due">{new Date(t.due).toLocaleDateString()}</span>}
                             {t.list && <span className="tag">{t.list}</span>}
