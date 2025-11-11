@@ -21,7 +21,7 @@ export default function TodoListDetail({ task, setTasks }) {
 
     useEffect(() => {
         if (task && task.editing && titleRef.current) {
-            setTimeout(() => titleRef.current.focus(), 50);
+            setTimeout(() => titleRef.current.focus(), 50); 
         }
     }, [task]);
 
@@ -37,27 +37,29 @@ export default function TodoListDetail({ task, setTasks }) {
             list: form.list,
             due: form.due,
             tags: Array.isArray(form.tags) ? [...form.tags] : [],
-            editing: false
+            editing: false 
         };
     }));
     };
 
     const remove = () => {
-        setTasks(prev => prev.filter(t => t.id !== task.id));
+        setTasks(prev => prev.filter(t => t.id !== task.id)); // khi xóa task, cập nhật lại danh sách tasks
     };
 
     return (
         <div className="card detail-card">
+            
             <h3>Task:</h3>
+
             <input
                 ref={titleRef}
                 className="title-input"
                 value={form.title}
                 onChange={e => setForm({...form, title: e.target.value})}
                 onKeyDown={e => { if (e.key === 'Enter') save(); }}
-                   // onBlur={() => save()}
                 placeholder="Task title"
             />
+            
             <label>Description</label>
 
             <textarea value={form.description}
@@ -73,10 +75,12 @@ export default function TodoListDetail({ task, setTasks }) {
                 <label htmlFor="task-due">Due date</label>
                 <input id="task-due" type="date" value={form.due || ''} onChange={e=>setForm({...form, due:e.target.value})} />
             </div>
+
             <div className="actions">
                 <button className="btn btn-danger" onClick={remove}>Delete Task</button>
                 <button className="btn btn-primary" onClick={save}>Save Change</button>
             </div>
+
         </div>
     );
 } 

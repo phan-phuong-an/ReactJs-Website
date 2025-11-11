@@ -41,6 +41,7 @@
 .items { 
     margin-top:18px; 
 }
+
 .item {
     display: grid;
     grid-template-columns: 44px 1fr auto;
@@ -67,6 +68,7 @@
     justify-content:center; 
     background:white; 
 }
+
 .radio.checked { 
     background:#e9ebee; 
 }
@@ -76,6 +78,7 @@
     font-size: 15px;
     line-height: 1.4;
 }
+
 .title.completed { 
     color:#9aa0a6; 
     text-decoration:line-through; 
@@ -94,6 +97,7 @@
     color:#666; 
     font-size: 14px;
 }
+
 .tag { 
     background:#e8f3ff; 
     padding:6px 10px; 
@@ -108,6 +112,7 @@
     margin-top: -6px;
     font-size:16px; 
 }
+
 .detail-card textarea { 
     width:90%; 
     min-height:90px; 
@@ -115,6 +120,7 @@
     padding:10px; 
     margin-top: 10px;
 }
+
 .detail-card .form-controls{
     display:flex;
     flex-wrap:wrap;
@@ -123,21 +129,23 @@
     margin-top:8px;
     margin-bottom:6px;
 }
+
 .detail-card .form-controls label{
     font-weight:600;
     margin-right:2px;
 }
+
 .detail-card .form-controls select,
 .detail-card .form-controls input[type="date"]{
     padding:6px 8px;
     border-radius:6px;
     border:1px solid #ddd;
 }
+
 .detail-card .form-controls input[type="date"]{
     width:160px;
 }
 
-/* title input styling */
 .title-input {
     width: 100%;
     font-size: 18px;
@@ -148,27 +156,32 @@
     box-sizing: border-box;
     margin-bottom: 8px;
 }
+
 .title-input:focus {
     outline: none;
     border-color: #1967d2;
     box-shadow: 0 0 0 3px rgba(25,103,210,0.08);
 }
+
 .detail-card .actions { 
     display:flex; 
     gap:12px; 
     margin-top:12px; 
 }
+
 .btn { 
     padding:8px 12px; 
     border-radius:8px; 
     border:none; 
     cursor:pointer; 
 }
+
 .btn-primary { 
     background:#1967d2; 
     color:#fff; 
     margin-top: 6px;    
 }
+
 .btn-danger { 
     background:#eee; 
     margin-right: 15px;
