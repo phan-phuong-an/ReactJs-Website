@@ -96,6 +96,7 @@
   cursor: pointer;
   margin-left: 5px;
   margin-bottom: 10px;
+  transition: background-color 180ms ease, color 180ms ease, transform 120ms ease, box-shadow 180ms ease;
 }
 
 .btn-primary {
@@ -112,6 +113,18 @@
 .toolbar .btn.btn-primary {
   color: #061219;
   margin-left: 5px;
+}
+
+.toolbar .btn.btn-primary:hover {
+  transform: translateY(-2px);
+  background: #e4e4e4;
+  box-shadow: 0 10px 24px rgba(14,165,169,0.14);
+}
+
+.toolbar .btn.btn-outline:hover {
+  transform: translateY(-2px);
+  background: #e4e4e4;
+  box-shadow: 0 8px 18px rgba(14,165,169,0.06);
 }
 
 .table-card {
