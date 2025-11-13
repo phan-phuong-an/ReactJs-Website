@@ -8,6 +8,7 @@ import Skills from "./components/sections/Skills";
 import Interests from "./components/sections/Interests";
 import SoftSkills from "./components/sections/SoftSkills";  
 import TodoList from "./components/sections/TodoList.js";
+import StudentManagement from "./components/sections/StudentManagement"; 
 import "./App.css";
 
 
@@ -45,8 +46,10 @@ const App = () => {
       case "interests": return <Interests />;
       case "softskills": return <SoftSkills />;
       case "todoList": return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
+      case "studentmanagement": return <StudentManagement />;
 
       default: return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
+
     }
   };
 
