@@ -6,7 +6,7 @@ export const sampleStudents = [
     name: 'Anna',
     classCode: 'CKTGT1',
     status: 'Đã nhập học',
-    time: '2025-10-09',
+    time: '2025/10/09',
     note: ''
   },
 
@@ -17,7 +17,7 @@ export const sampleStudents = [
     name: 'Bob',
     classCode: 'CKTGT2',
     status: 'Đã nhập học',
-    time: '2025-10-09',
+    time: '2025/10/09',
     note: 'Sinh viên chuyển từ trường khác'
   },
 
@@ -28,7 +28,7 @@ export const sampleStudents = [
     name: 'Han',
     classCode: 'CKTGT16',
     status: 'Đã nhập học',
-    time: '2020-10-09',
+    time: '2020/10/09',
     note: ''
   },
   
@@ -39,7 +39,7 @@ export const sampleStudents = [
     name: 'Nami',
     classCode: 'CKTGT14',
     status: 'Chưa nhập học',
-    time: '2025-10-09',
+    time: '2025/10/09',
     note: ''
   },
   
@@ -50,7 +50,7 @@ export const sampleStudents = [
     name: 'Bo',
     classCode: 'CKTGT2',
     status: 'Đã nhập học',
-    time: '2025-10-09',
+    time: '2025/10/09',
     note: ''
   },
   
@@ -61,7 +61,7 @@ export const sampleStudents = [
     name: 'Bob',
     classCode: 'CKTGT1',
     status: 'Đã nhập học',
-    time: '2025-10-09',
+    time: '2025/10/09',
     note: ''
   },
   
@@ -72,7 +72,7 @@ export const sampleStudents = [
     name: 'Bobi',
     classCode: 'CKTGT2',
     status: 'Đã nhập học',
-    time: '2025-10-09',
+    time: '2025/10/09',
     note: ''
   },
 

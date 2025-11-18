@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { sampleTasks } from './data/sampleTasks';
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/sections/Sidebar.js';
 import About from "./components/sections/About";
 import Experience from "./components/sections/Experience";
 import Education from "./components/sections/Education";
 import Skills from "./components/sections/Skills";
 import Interests from "./components/sections/Interests";
 import SoftSkills from "./components/sections/SoftSkills";  
-import TodoList from "./components/sections/TodoList.js";
-import StudentManagement from "./components/sections/StudentManagement"; 
+import TodoList from "./components/todolist/TodoList";
+import StudentManagement from "./components/studentsmanagements/StudentManagement.js"; 
 import "./App.css";
 
 
@@ -62,3 +62,4 @@ const App = () => {
 };
 
 export default App;
+ 

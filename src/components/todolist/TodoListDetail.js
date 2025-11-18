@@ -43,7 +43,7 @@ export default function TodoListDetail({ task, setTasks }) {
     };
 
     const remove = () => {
-        setTasks(prev => prev.filter(t => t.id !== task.id)); // khi xóa task, cập nhật lại danh sách tasks
+        setTasks(prev => prev.filter(t => t.id !== task.id)); 
     };
 
     return (

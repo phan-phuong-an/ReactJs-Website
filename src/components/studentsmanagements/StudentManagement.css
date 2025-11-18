@@ -133,12 +133,14 @@
   padding: 12px;
   box-shadow: 0 6px 18px rgba(15,33,48,0.06);
   overflow: auto;
+  width: 100%;
 }
 
 .student-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+
 }
 
 .student-table thead th {
@@ -148,11 +150,13 @@
   font-weight: 600;
   font-size: 13px;
   border-bottom: 1px solid #e6eef6;
+  text-align: center;
 }
 
 .student-table tbody td {
   padding: 12px 10px;
   border-bottom: 1px solid #f1f5f9;
+  text-align: center;
 }
 
 .student-table tbody tr:hover {
