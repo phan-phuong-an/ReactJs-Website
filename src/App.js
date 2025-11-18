@@ -9,6 +9,7 @@ import Interests from "./components/sections/Interests";
 import SoftSkills from "./components/sections/SoftSkills";  
 import TodoList from "./components/todolist/TodoList";
 import StudentManagement from "./components/studentsmanagements/StudentManagement.js"; 
+import Login from "./components/login/login.js";
 import "./App.css";
 
 
@@ -47,6 +48,7 @@ const App = () => {
       case "softskills": return <SoftSkills />;
       case "todoList": return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
       case "studentmanagement": return <StudentManagement />;
+      case "login": return <Login onSuccess = {(user) => { setActiveTab ('studentmanagement'); }} />;
 
       default: return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
 

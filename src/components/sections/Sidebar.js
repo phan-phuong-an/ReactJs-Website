@@ -3,14 +3,15 @@ import "./Sidebar.css";
 export default function Sidebar({ activeTab, setActiveTab }) 
 {
     const menus = [
-       { key: "about", label: "About" },
-       { key: "experience", label: "Experience" }, 
-       { key: "education", label: "Education" },
-       { key: "skills", label: "Skills" },
-       { key: "interests", label: "Interests" },
+    { key: "about", label: "About" },
+    { key: "experience", label: "Experience" }, 
+    { key: "education", label: "Education" },
+    { key: "skills", label: "Skills" },
+    { key: "interests", label: "Interests" },
     { key: "softskills", label: "Soft Skills" },
     { key: "todoList", label: "TodoList" },
-    { key: "studentmanagement", label: "Student Management" }
+    { key: "studentmanagement", label: "Student Management" },
+    { key: "login", label: "Login"},
     ];
 
     return (

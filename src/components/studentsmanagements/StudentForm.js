@@ -4,31 +4,30 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { parseISO } from 'date-fns';
 import './Modal.css';
 
-// Try to convert several common date string formats into a valid Date or null
 const parseToDate = (val) => {
   if (!val && val !== 0) return null;
   if (val instanceof Date && !isNaN(val)) return val;
   const s = String(val).trim();
-  // try ISO first
+  
   try {
     const d = parseISO(s);
     if (!isNaN(d)) return d;
   } catch (e) {
-    // ignore
+ 
   }
-  // dd/mm/yyyy
+
   let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if (m) {
     const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
     if (!isNaN(d)) return d;
   }
-  // dd-mm-yyyy
+
   m = s.match(/^(\d{2})-(\d{2})-(\d{4})$/);
   if (m) {
     const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
     if (!isNaN(d)) return d;
   }
-  // fallback: try Date parse
+
   const parsed = new Date(s);
   if (!isNaN(parsed)) return parsed;
   return null;
@@ -45,6 +44,7 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
       placeholder={placeholder}
       style={{ width: '100%', paddingRight: 44, boxSizing: 'border-box' }}
     />
+
     <button
       type="button"
       className="date-icon-btn"
@@ -65,6 +65,7 @@ const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) 
         <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.2" />
         <path d="M16 3v4M8 3v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
+
     </button>
   </div>
 ));
@@ -82,7 +83,6 @@ export default function StudentForm({ initial = null, onCancel, onSubmit }) {
     note: '',
   });
 
-  // dateObj holds a Date for react-datepicker; form.time stores iso yyyy-mm-dd
   const [dateObj, setDateObj] = useState(parseToDate(initial?.time));
   const dateRef = useRef(null);
 
