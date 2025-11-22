@@ -113,6 +113,7 @@
 .toolbar .btn.btn-primary {
   color: #061219;
   margin-left: 5px;
+  width: 60px;
 }
 
 .toolbar .btn.btn-primary:hover {
@@ -210,7 +211,7 @@
 .student-table td .btn.btn-outline {
   background: transparent;
   border: 1px solid #e6eef6;
-  margin-top: 5px;
+  margin-top: 10px;
 }
 
 .student-table td .btn:hover {

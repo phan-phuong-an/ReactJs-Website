@@ -1,3 +1,5 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { sampleTasks } from './data/sampleTasks';
 import Sidebar from './components/sections/Sidebar.js';
@@ -10,10 +12,11 @@ import SoftSkills from "./components/sections/SoftSkills";
 import TodoList from "./components/todolist/TodoList";
 import StudentManagement from "./components/studentsmanagements/StudentManagement.js"; 
 import Login from "./components/login/login.js";
+import Dashboard from "./dashboard/Dashboard.js";
 import "./App.css";
 
 
-const App = () => {
+function MainLayout() {
   const [activeTab, setActiveTab] = useState("about");
   const [aboutEnterTime, setAboutEnterTime] = useState(null);
   const [educationElapsedSeconds, setEducationElapsedSeconds] = useState(null);
@@ -48,10 +51,8 @@ const App = () => {
       case "softskills": return <SoftSkills />;
       case "todoList": return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
       case "studentmanagement": return <StudentManagement />;
-      case "login": return <Login onSuccess = {(user) => { setActiveTab ('studentmanagement'); }} />;
-
+      case "login": return <Login onSuccess = {() => { setActiveTab ('studentmanagement'); }} />;
       default: return <TodoList tasks={tasks} setTasks={setTasks} selectedId={selectedId} setSelectedId={setSelectedId} />;
-
     }
   };
 
@@ -60,6 +61,19 @@ const App = () => {
       <Sidebar setActiveTab={setActiveTab} activeTab={activeTab} />
       <div className="content">{renderContent()}</div>
     </div>
+  );
+}
+
+const App = () => {
+  return ( 
+    <BrowserRouter>
+      <Routes>
+        <Route path = "/" element = {<MainLayout />} />
+        <Route path = "/login" element = {<Login />} />
+        <Route path = "/dashboard" element = {<Dashboard />} />
+        <Route path = "*" element = {<Navigate to = "/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

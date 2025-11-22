@@ -8,12 +8,28 @@ const parseToDate = (val) => {
   if (!val && val !== 0) return null;
   if (val instanceof Date && !isNaN(val)) return val;
   const s = String(val).trim();
-  
+
+  const isoDataMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoDataMatch) {
+    const y = parseInt(isoDataMatch[1]);
+    const m = parseInt(isoDataMatch[2]) - 1;
+    const d = parseInt(isoDataMatch[3]);
+    const dt = new Date(y, m, d);
+    if (!isNaN(dt)) return dt;
+  }
+
   try {
     const d = parseISO(s);
-    if (!isNaN(d)) return d;
+    if (!isNaN(d)) {
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const day = d.getDate();
+      const local = new Date(y, m, day);
+      if (!isNaN(local)) return local;
+      return d;
+    }
   } catch (e) {
- 
+    // ignore
   }
 
   let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -119,11 +135,18 @@ export default function StudentForm({ initial = null, onCancel, onSubmit }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDateChange = (d) => {
-    setDateObj(d);
-    const iso = d ? d.toISOString().slice(0, 10) : '';
-    setForm((prev) => ({ ...prev, time: iso }));
-  };
+ const handleDateChange = (d) => {
+  setDateObj(d);
+  if (!d) {
+    setForm((prev) => ({ ...prev, time: '' }));
+    return;
+  }
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const isoLocal = `${y}-${m}-${day}`;
+  setForm((prev) => ({ ...prev, time: isoLocal }));
+};
 
   const submit = (e) => {
     e.preventDefault();

@@ -101,6 +101,7 @@
   color: #fff;
   border: none;
   box-shadow: 0 6px 18px rgba(14,165,169,0.08);
+  width: 60px;
 }
 
 .modal .btn.btn-outline:hover {
