@@ -1,221 +1,203 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { parseISO } from 'date-fns';
-import './Modal.css';
-
-const parseToDate = (val) => {
-  if (!val && val !== 0) return null;
-  if (val instanceof Date && !isNaN(val)) return val;
-  const s = String(val).trim();
-
-  const isoDataMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (isoDataMatch) {
-    const y = parseInt(isoDataMatch[1]);
-    const m = parseInt(isoDataMatch[2]) - 1;
-    const d = parseInt(isoDataMatch[3]);
-    const dt = new Date(y, m, d);
-    if (!isNaN(dt)) return dt;
-  }
-
-  try {
-    const d = parseISO(s);
-    if (!isNaN(d)) {
-      const y = d.getFullYear();
-      const m = d.getMonth();
-      const day = d.getDate();
-      const local = new Date(y, m, day);
-      if (!isNaN(local)) return local;
-      return d;
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (m) {
-    const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
-    if (!isNaN(d)) return d;
-  }
-
-  m = s.match(/^(\d{2})-(\d{2})-(\d{4})$/);
-  if (m) {
-    const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
-    if (!isNaN(d)) return d;
-  }
-
-  const parsed = new Date(s);
-  if (!isNaN(parsed)) return parsed;
-  return null;
+import './Modal.css'; // Import CSS
+const getBoolValue = (value) => {
+    if (value === 'Nam' || value === true || value === 'Đạt') return true;
+    if (value === 'Nữ' || value === false || value === 'Cần theo dõi') return false;
+    return ''; 
 };
 
-const CustomDateInput = React.forwardRef(({ value, onClick, placeholder }, ref) => (
-  <div className="date-wrapper" style={{ position: 'relative' }}>
-    <input
-      ref={ref}
-      readOnly
-      className="date-input"
-      onClick={onClick}
-      value={value || ''}
-      placeholder={placeholder}
-      style={{ width: '100%', paddingRight: 44, boxSizing: 'border-box' }}
-    />
+const parseDate = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? null : date;
+};
 
-    <button
-      type="button"
-      className="date-icon-btn"
-      onClick={onClick}
-      aria-label="Mở lịch"
-      style={{
-        position: 'absolute',
-        right: 8,
-        top: '50%',
-        transform: 'translateY(-50%)',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        padding: 6,
-      }}
-    >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.2" />
-        <path d="M16 3v4M8 3v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      </svg>
 
-    </button>
-  </div>
-));
-CustomDateInput.displayName = 'CustomDateInput';
+const initialFormState = {
+    id: null,
+    name: '', birthday: null, gender: '', address: '', months: 0, 
+    ispasses: true, description: '',
+    parentname: '', phone: '',
+    surveyby: '', surveyplace: '', surveyNote: '',
+    formName: '', orgName: '', periodName: '',
+};
 
 export default function StudentForm({ initial = null, onCancel, onSubmit }) {
-  const [form, setForm] = useState({
-    id: null,
-    hk: '',
-    ms: '',
-    name: '',
-    cls: '',
-    status: '',
-    time: '',
-    note: '',
-  });
+    const [form, setForm] = useState(initialFormState);
 
-  const [dateObj, setDateObj] = useState(parseToDate(initial?.time));
-  const dateRef = useRef(null);
 
-  useEffect(() => {
-    if (initial) {
-      setForm({
-        id: initial.id ?? null,
-        hk: initial.hk ?? '',
-        ms: initial.ms ?? '',
-        name: initial.name ?? '',
-        cls: initial.cls ?? '',
-        status: initial.status ?? '',
-        time: initial.time ?? '',
-        note: initial.note ?? '',
-      });
-      setDateObj(parseToDate(initial.time));
-    } else {
-      setForm({
-        id: null,
-        hk: '',
-        ms: '',
-        name: '',
-        cls: '',
-        status: '',
-        time: '',
-        note: '',
-      });
-      setDateObj(null);
-    }
-  }, [initial]);
+    useEffect(() => {
+        if (initial) {
+            setForm({
+                id: initial.id ?? null,
+                name: initial.name ?? '',
+                birthday: parseDate(initial.birthday || initial.time), 
+                gender: getBoolValue(initial.gender), 
+                address: initial.address ?? '',
+                months: initial.months ?? 0,
+                ispasses: getBoolValue(initial.status || initial.isPass),
+                description: initial.description ?? initial.note ?? '', 
+                parentname: initial.parentName ?? initial.parent ?? '',
+                phone: initial.phone ?? '',
+                surveyby: initial.surveyBy ?? '',
+                surveyplace: initial.surveyPlace ?? '',
+                surveyNote: initial.surveyNote ?? '',
+        
+                formName: initial.formName ?? initial.form?.name ?? '', 
+                orgName: initial.orgName ?? initial.orgunit?.name ?? '', 
+                periodName: initial.periodName ?? initial.period?.name ?? '', 
+            });
+        } else {
+            setForm(initialFormState);
+        }
+    }, [initial]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+    const handleChange = (e) => {
+        const { name, value, type } = e.target;
+        setForm(prev => ({ ...prev, [name]: type === 'number' ? Number(value) : value }));
+    };
 
- const handleDateChange = (d) => {
-  setDateObj(d);
-  if (!d) {
-    setForm((prev) => ({ ...prev, time: '' }));
-    return;
-  }
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const isoLocal = `${y}-${m}-${day}`;
-  setForm((prev) => ({ ...prev, time: isoLocal }));
-};
+    const handleDateChange = (date) => {
+        setForm(prev => ({ ...prev, birthday: date }));
+    };
+    
+    const handleSelectChange = (e) => {
+        const { name, value } = e.target;
+   
+        const val = value === 'true' ? true : value === 'false' ? false : value;
+        setForm(prev => ({ ...prev, [name]: val }));
+    };
 
-  const submit = (e) => {
-    e.preventDefault();
-    if (!form.ms || !form.name) {
-      alert('Mã SV và Họ tên là bắt buộc');
-      return;
-    }
-    onSubmit({ ...form });
-  };
 
-  return (
-    <div className="modal-backdrop">
-      <div className="modal">
-        <h3>{form.id ? 'Sửa tình trạng sinh viên' : 'Thêm sinh viên'}</h3>
+    const submit = (e) => {
+        e.preventDefault();
+        
+   
+        const dataToSubmit = {
+            ...form,
+          
+            birthday: form.birthday ? form.birthday.toISOString().split('T')[0] : null,
+    
+            ispasses: getBoolValue(form.ispasses),
+            gender: getBoolValue(form.gender),
 
-        <form onSubmit={submit}>
-          <div className="form-row">
-            <label>Mã học kỳ</label>
-            <input name="hk" value={form.hk} onChange={handleChange} />
-          </div>
+            formName: undefined, orgName: undefined, periodName: undefined,
+        };
+        
+        onSubmit(dataToSubmit); 
+    };
 
-          <div className="form-row">
-            <label>Mã sinh viên</label>
-            <input name="ms" value={form.ms} onChange={handleChange} />
-          </div>
+    return (
+        <div className="modal-backdrop">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h3>{form.id ? `Chỉnh Sửa Hồ Sơ #${form.id}` : 'Thêm Hồ Sơ Sàng Lọc Mới'}</h3>
+                    {form.periodName && <p style={{ margin: 0, color: '#555', fontSize: '0.9rem' }}>Đợt: {form.periodName} ({form.orgName})</p>}
+                </div>
 
-          <div className="form-row">
-            <label>Họ và tên</label>
-            <input name="name" value={form.name} onChange={handleChange} />
-          </div>
+                <form onSubmit={submit}>
+                    <div className="form-grid">
+                        
+                        <div className="form-section-title"> Thông tin liên kết</div>
+                        
+                        <div className="form-group">
+                            <label>Loại Phiếu Sàng Lọc</label>
+                            <input value={form.formName || 'N/A'} readOnly className="form-control" />
+                        </div>
+                        <div className="form-group">
+                            <label>Trạm/Đơn vị Y Tế</label>
+                            <input value={form.orgName || 'N/A'} readOnly className="form-control" />
+                        </div>
+                        <div className="form-group">
+                            <label>Đợt Sàng Lọc</label>
+                            <input value={form.periodName || 'N/A'} readOnly className="form-control" />
+                        </div>
 
-          <div className="form-row">
-            <label>Mã lớp</label>
-            <input name="cls" value={form.cls} onChange={handleChange} />
-          </div>
+                        <div className="form-section-title"> Thông tin trẻ</div>
+                        
+                        <div className="form-group span-2">
+                            <label>Tên trẻ (*)</label>
+                            <input name="name" value={form.name} onChange={handleChange} required className="form-control" />
+                        </div>
+                        <div className="form-group">
+                            <label>Giới tính (*)</label>
+                            <select name="gender" value={form.gender} onChange={handleSelectChange} required className="form-select">
+                                <option value="" disabled>Chọn</option>
+                                <option value={true}>Nam</option>
+                                <option value={false}>Nữ</option>
+                            </select>
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Ngày sinh (*)</label>
+                            <DatePicker 
+                                selected={form.birthday} 
+                                onChange={handleDateChange} 
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText="dd/mm/yyyy"
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Số tháng tuổi</label>
+                            <input type="number" name="months" value={form.months} readOnly className="form-control" title="Trường này được tính tự động" />
+                        </div>
+                        <div className="form-group span-3">
+                            <label>Địa chỉ</label>
+                            <input name="address" value={form.address} onChange={handleChange} className="form-control" />
+                        </div>
+                        
+                        <div className="form-section-title"> Thông tin gia đình</div>
+                        <div className="form-group">
+                            <label>Tên phụ huynh</label>
+                            <input name="parentname" value={form.parentname} onChange={handleChange} className="form-control" />
+                        </div>
+                        <div className="form-group">
+                            <label>SĐT phụ huynh</label>
+                            <input name="phone" value={form.phone} onChange={handleChange} className="form-control" />
+                        </div>
 
-          <div className="form-row">
-            <label>Tình trạng</label>
-            <input name="status" value={form.status} onChange={handleChange} />
-          </div>
+                        <div className="form-section-title"> Kết quả & Khảo sát</div>
+                        
+                        <div className="form-group">
+                            <label>Trạng thái (*)</label>
+                            <select name="ispasses" value={form.ispasses} onChange={handleSelectChange} required className="form-select">
+                                <option value="" disabled>Chọn</option>
+                                <option value={true}>Đạt</option>
+                                <option value={false}>Cần theo dõi</option>
+                            </select>
+                        </div>
+                        <div className="form-group span-2">
+                            <label>Người khảo sát</label>
+                            <input name="surveyby" value={form.surveyby} onChange={handleChange} className="form-control" />
+                        </div>
+                        <div className="form-group span-3">
+                            <label>Nơi khảo sát</label>
+                            <input name="surveyplace" value={form.surveyplace} onChange={handleChange} className="form-control" />
+                        </div>
+                        <div className="form-group span-3">
+                            <label>Kết luận sàng lọc (Description)</label>
+                            <textarea name="description" value={form.description} onChange={handleChange} className="form-control" />
+                        </div>
+                        <div className="form-group span-3">
+                            <label>Ghi chú khảo sát (SurveyNote)</label>
+                            <textarea name="surveyNote" value={form.surveyNote} onChange={handleChange} className="form-control" />
+                        </div>
 
-          <div className="form-row">
-            <label>Thời gian</label>
-            <DatePicker
-              selected={dateObj}
-              onChange={handleDateChange}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="dd/mm/yyyy"
-              popperPlacement="top-end"
-              customInput={<CustomDateInput />}
-              ref={dateRef}
-            />
-          </div>
+                    </div>
 
-          <div className="form-row">
-            <label>Ghi chú</label>
-            <input name="note" value={form.note} onChange={handleChange} />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-            <button type="button" className="btn btn-outline" onClick={onCancel}>
-              Hủy
-            </button>
-            <button type="submit" className="btn btn-primary">
-              {form.id ? 'Lưu' : 'Thêm'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+                    <div className="modal-actions">
+                        <button type="button" className="btn btn-cancel" onClick={onCancel}>
+                            Hủy
+                        </button>
+                        <button type="submit" className="btn btn-submit">
+                            {form.id ? 'Lưu Thay Đổi' : 'Thêm Hồ Sơ'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 }

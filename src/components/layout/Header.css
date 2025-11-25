@@ -1,0 +1,61 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  margin-top: 15px; /* nếu bạn vẫn muốn khoảng trên */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hamburger {
+  font-size: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.header-title {
+  font-size: 16px;
+  color: #333;
+}
+
+/* phần phải của header */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* nút login/logout */
+.btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #e6eef6;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  min-height: 32px;
+}
+
+.btn.login {
+  color: #0d6efd;
+  border-color: rgba(13,110,253,0.12);
+}
+
+.btn.logout {
+  color: #fff;
+  background: #e74c3c;
+  border-color: #e74c3c;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 20px; /* pill but smaller */
+}

@@ -22,14 +22,14 @@ export default function Login({ onSuccess }) {
 
         setLoading(true);
         try {
-            const resp = await apiFetch.post('/api/auth/login', { userid, password }, { includeCredentials: true });  
+            const resp = await apiFetch.post('/api/auth/login', { userid, password }, { includeCredentials: false });  
             console.log('LOGIN Response: ', resp);
-            const token = 
-            resp?.data?.accessTokentoken || 
-            resp?.data?.token || 
-            resp?.accessToken ||
-            resp?.token ||
-            resp?.data?.data?.token;
+            const token =
+                resp?.data?.accessToken ||
+                resp?.data?.token ||
+                resp?.data?.data?.token ||
+                resp?.accessToken ||
+                resp?.token;
 
             if (token) {
                 console.log("Token received:", token);
@@ -40,7 +40,8 @@ export default function Login({ onSuccess }) {
                 }
 
                 if (typeof onSuccess === 'function') onSuccess({ userid, token });
-                navigate('/dashboard');
+                try { window.dispatchEvent(new Event('authChange')); } catch (e) {}
+                navigate('/app', { replace: true, state: { tab: 'studentmanagement' } });
                 return;
             } 
 

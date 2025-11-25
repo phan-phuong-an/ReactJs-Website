@@ -23,6 +23,16 @@ async function request(method, path, { params, body, includeCredentials } = {}) 
         headers: buildHeaders(!!body),
     };
 
+
+    if (process.env.NODE_ENV === 'development') {
+        try {
+            const safeBody = body && typeof body === 'object' ? JSON.stringify(body) : body;
+            console.debug('[apiFetch] Request:', { method: opts.method, url, headers: opts.headers, body: safeBody, includeCredentials });
+        } catch (e) {
+            console.debug('[apiFetch] Request build error', e);
+        }
+    }
+
     if (includeCredentials === true ) opts.credentials = 'include';
     else if (includeCredentials === false ) opts.credentials = 'same-origin';
     else if (_defaultIncludeCredentials) opts.credentials = 'include';
@@ -46,6 +56,9 @@ async function request(method, path, { params, body, includeCredentials } = {}) 
         const err = new Error('Network response was not ok');
         err.status = resp.status;
         err.data = data;
+        // attach Retry-After header if present
+        const ra = resp.headers.get('Retry-After') || resp.headers.get('retry-after');
+        if (ra) err.retryAfter = ra;
         throw err;
     }
 

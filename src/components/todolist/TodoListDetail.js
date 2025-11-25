@@ -77,8 +77,8 @@ export default function TodoListDetail({ task, setTasks }) {
             </div>
 
             <div className="actions">
-                <button className="btn btn-danger" onClick={remove}>Delete Task</button>
-                <button className="btn btn-primary" onClick={save}>Save Change</button>
+                <button className="btn-delete-task" onClick={remove}>Delete Task</button>
+                <button className="btn-save-change" onClick={save}>Save Change</button>
             </div>
 
         </div>

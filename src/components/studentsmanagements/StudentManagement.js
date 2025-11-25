@@ -1,188 +1,257 @@
-import React, { useMemo, useState } from 'react';
-import './StudentManagement.css'; 
+import React, { useState, useEffect, useMemo } from 'react';
+import './StudentManagement.css';
 import StudentForm from './StudentForm';
-import { sampleStudents } from '../../data/sampleStudents'; 
+import { apiFetch } from '../../api/fetchClient';
+import 'react-datepicker/dist/react-datepicker.css';
 
 
 const formatDate = (value) => {
-  if (!value) return '';
-  const s = String(value).trim();
-  const parsed = new Date(s);
-  if (!isNaN(parsed)) {
-    const d = String(parsed.getDate()).padStart(2, '0');
-    const m = String(parsed.getMonth() + 1).padStart(2, '0');
-    const y = parsed.getFullYear();
-    return `${d}/${m}/${y}`;
-  }
-  return s;
+    if (!value) return '';
+    const date = new Date(value);
+    if (isNaN(date)) return String(value);
+    return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
 };
 
-
-const StudentTable = ({ rows = [], onEdit, onDelete }) => {
-  return (
-    <div className="table-card">
-      <table className="student-table">
-        <thead>
-          <tr>
-            <th>Mã HK</th>
-            <th>Mã SV</th>
-            <th>Họ và tên</th>
-            <th>Mã Lớp</th>
-            <th>Tình trạng</th>
-            <th>Thời gian</th>
-            <th>Ghi chú</th>
-            <th style={{ width: 110, textAlign: 'center' }}>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 && (
-            <tr>
-              <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
-                Không tìm thấy dữ liệu phù hợp
-              </td>
-            </tr>
-          )}
-
-          {rows.map((r) => (
-            <tr key={r.id}>
-              <td>{r.hk}</td>
-              <td><span className="badge">{r.ms}</span></td>
-              <td style={{ fontWeight: 600, color: '#2c3e50' }}>{r.name}</td>
-              <td>{r.cls}</td>
-              <td>
-                <span className={`status-badge ${r.status === 'Đạt' || r.status === 'Pass' ? 'status-pass' : 'status-warning'}`}>
-                  {r.status}
-                </span>
-              </td>
-              <td>{formatDate(r.time)}</td>
-              <td title={r.note}>
-                <div style={{ 
-                    maxWidth: '200px', 
-                    whiteSpace: 'nowrap', 
-                    overflow: 'hidden', 
-                    textOverflow: 'ellipsis' 
-                }}>
-                    {r.note}
-                </div>
-              </td>
-              <td style={{ textAlign: 'center' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '6px' }}>
-                    <button className="btn btn-sm btn-outline" onClick={() => onEdit?.(r)}>Sửa</button>
-                    <button className="btn btn-sm btn-danger" onClick={() => onDelete?.(r.id)}>Xóa</button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+const normalizeNumber = (item) => {
+    return {
+        id: item.id,
+        name: item.name || 'Chưa cập nhật',
+        birthday: item.birthday || '',
+        gender: item.gender ? 'Nam' : 'Nữ',
+        address: item.address || '',
+        months: item.months || 0,
+        parentName: item.parentName || 'N/A',
+        phone: item.phone || 'N/A',
+        isPass: item.ispasses,
+        statusText: item.ispasses ? 'Đạt' : 'Chưa đạt',
+        description: item.description || '',
+        surveyBy: item.surveyby || 'N/A',
+        surveyPlace: item.surveyplace || '',
+        surveyNote: item.surveyNote || '',
+        createdDate: item.createdDate || '',
+        formName: item.form?.name || '',
+        formCode: item.form?.code || '',
+        orgName: item.orgunit?.name || '',
+        periodName: item.period?.name || '',
+        periodCode: item.period?.code || '',      
+    };
 };
 
 export default function StudentManagement() {
-  const [data, setData] = useState(() => {
-    if (!Array.isArray(sampleStudents)) return [];
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [totalItems, setTotalItems] = useState(0);
+    const [showForm, setShowForm] = useState(false);
+    const [editing, setEditing] = useState(null);
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(10);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    return sampleStudents.map((s, idx) => ({
-      id: s.id ?? s.studentId ?? Date.now() + idx,
-      hk: s.semester ?? s.hk ?? '',
-      ms: s.studentId ?? s.ms ?? '',
-      name: s.name ?? '',
-      cls: s.classCode ?? s.cls ?? '',
-      status: s.status ?? '',
-      time: s.time ?? s.date ?? '',
-      note: s.note ?? '',
-    }));
-  });
+    const fetchData = async (currentPage = page) => {
+        setLoading(true);
+        setError(null);
 
+           try {
+                const resp = await apiFetch.get('/api/forminstances/my', { page, limit: pageSize });
+                   
+                const rootData = resp?.data?.data;
+                const rawList = Array.isArray(rootData?.data) ? rootData.data : [];
+                const total = rootData?.pagination?.total || 0;
 
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
+                const normalizedList = rawList.map(normalizeNumber);
+                setData(normalizedList);
+                setTotalItems(total);
+            
 
-  const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState(null);
+            } catch (err) {
+                const msg = err?.data?.message || 'Không thể tải dữ liệu';
+                if (err?.status === 401) setError('Phiên đăng nhập hết hạn.');
+                else setError(msg);
+                
+                console.error("StudentManagement Error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+    useEffect(() => {
+        fetchData();
+    }, [page, pageSize]);
 
  
-  const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
-    const lowerTerm = searchTerm.toLowerCase();
-    return data.filter(item => 
-        item.name.toLowerCase().includes(lowerTerm) ||
-        String(item.ms).includes(lowerTerm) ||
-        item.cls.toLowerCase().includes(lowerTerm)
+    const filteredData = useMemo(() => {
+        if (!searchTerm) return data;
+        const lower = searchTerm.toLowerCase();
+        return data.filter(item => 
+            item.name.toLowerCase().includes(lower) || 
+            item.parentName.toLowerCase().includes(lower) ||
+            item.orgName.toLowerCase().includes(lower) ||
+            String(item.id).includes(lower)
+        );
+    }, [data, searchTerm]);
+
+
+    const pageCount = Math.max(1, Math.ceil(totalItems / pageSize));
+
+    const handleEdit = (row) => {
+        setEditing (row);
+        setShowForm(true);
+    };
+
+    const handleDelete = (id) => {
+        if (window.confirm('Xác nhận xóa bản ghi này?')) {
+            console.log('Delete record with id:', id);
+            setData(prev => prev.filter(item => item.id !== id));
+        }
+    };
+
+    const handleFormSubmit = async (formData) => {
+        console.log("Dữ liệu gửi đi:", formData);
+        
+        setShowForm(false);
+        setEditing(null);
+        
+        await fetchData(formData.id ? page : 1);
+    };
+
+    const renderActions = (row) => (
+        <td style={{ textAlign: 'center' }}>
+            <div className ="btn_eit_delete">
+                <button className="btn_edit" onClick={() => handleEdit(row)}>
+                    Sửa
+                </button>
+                <button className="btn_delete" onClick={() => handleDelete(row.id)}>
+                    Xóa
+                </button>
+            </div>
+        </td>
     );
-  }, [data, searchTerm]);
+
+    return (
+        <div className="dashboard-container">
+            <div className="dashboard-toolbar">
+                <h2 style={{ margin: 0, color: '#333' }}>Student Sàng lọc</h2>
+
+                <div className="search-box">
+                    <span className="search-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input 
+                        type="text" 
+                        placeholder="Tìm kiếm..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            {loading && <p style={{ fontStyle: 'italic', color: '#666' }}>Đang đồng bộ dữ liệu...</p>}
+            {error && <p style={{ color: '#dc3545' }}>Lỗi: {error}</p>}
+            
+             
+                     <button 
+                    className="btn_primary" 
+                    onClick={() => { setShowForm(true); setEditing(null); }}
+                >
+                    Thêm mới 
+                </button>
+            
+
+            <div className="table-wrapper">
+                <table className="dash-table">
+                    <thead>
+                        <tr>
+                            <th style={{ width: '18%' }}>Hồ sơ Trẻ</th>
+                            <th style={{ width: '15%' }}>Gia đình</th>
+                            <th style={{ width: '15%' }}>Đơn vị & Đợt</th>
+                            <th style={{ width: '30%' }}>Kết quả & Kết luận</th>
+                            <th style={{ width: '14%' }}>Thông tin Khảo sát</th>
+                            <th style={{ width: '8%' }}>Hành động</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredData.length === 0 && !loading ? (
+                            <tr>
+                                <td colSpan={6} style={{ textAlign: 'center', padding: '30px', color: '#999' }}>
+                                    Không có dữ liệu hiển thị
+                                </td>
+                            </tr>
+                        ) : (
+                            filteredData.map((row) => (
+                                <tr key={row.id}>
+                            
+                                    <td>
+                                        <div className="cell-title">{row.name}</div>
+                                        <div className="cell-detail">ID: {row.id}</div>
+                                        <div className="cell-detail">
+                                            {formatDate(row.birthday)} • {row.months} tháng • {row.gender}
+                                        </div>
+                                    </td>
+
+                          
+                                    <td>
+                                        <div className="cell-subtitle">{row.parentName}</div>
+                                        <div className="cell-detail" style={{ color: '#0d6efd' }}>{row.phone}</div>
+                                        <div className="cell-detail" style={{ marginTop: 4 }}>
+                                            <i>{row.address}</i>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div className="cell-org">{row.orgName}</div>
+                                        <div className="cell-detail">Đợt: {row.periodCode}</div>
+                                        <div className="cell-detail" title={row.formName}>
+                                            Form: {row.formCode}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span className={`badge ${row.isPass ? 'badge-pass' : 'badge-fail'}`}>
+                                            {row.statusText}
+                                        </span>
+                                        <div 
+                                            className="cell-detail"
+                                            style={{ maxHeight: '60px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}
+                                            title={row.description}
+                                        >
+                                            {row.description}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div className="cell-detail"><b>Người làm:</b> {row.surveyBy}</div>
+                                        <div className="cell-detail"><b>Tại:</b> {row.surveyPlace}</div>
+                                        <div className="cell-detail"><b>Ngày:</b> {formatDate(row.createdDate)}</div>
+                                    </td>
+
+                                    {renderActions(row)}
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
 
 
-  const pageCount = Math.max(1, Math.ceil(filteredData.length / pageSize));
-  const pageSafe = Math.min(Math.max(page, 1), pageCount);
-  
-  const currentTableData = useMemo(() => {
-    const start = (pageSafe - 1) * pageSize;
-    return filteredData.slice(start, start + pageSize);
-  }, [filteredData, pageSafe, pageSize]);
+            <div className="pagination">
+                <button className="page-btn" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Trước</button>
+                <span style={{ fontSize: '14px', color: '#555' }}>
+                    Trang {page} / {pageCount} (Tổng {totalItems})
+                </span>
+                <button className="page-btn" disabled={page >= pageCount} onClick={() => setPage(p => p + 1)}>Sau</button>
+            </div>
 
-
-  const handleEdit = (row) => {
-    setEditing(row);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm('Xác nhận xóa bản ghi này?')) {
-      setData(prev => prev.filter(p => p.id !== id));
-
-      if (pageSafe > 1 && currentTableData.length === 1) {
-          setPage(pageSafe - 1);
-      }
-    }
-  };
-
-  return (
-    <section className="student-management">
-      <div className="toolbar">
-        <div className="toolbar-left">
-          <button className="btn btn-primary" onClick={() => { setShowForm(true); setEditing(null); }}>
-            Thêm
-          </button>
-          <button className="btn btn-outline" onClick={() => alert("Chức năng xuất CSV (Offline)")}>
-            Xuất
-          </button>
+            {showForm && (
+                <StudentForm
+                    initial={editing}
+                    onCancel={() => { setShowForm(false); setEditing(null); }}
+                    onSubmit={handleFormSubmit}
+                />
+            )}
         </div>
-      </div>
-      <StudentTable rows={currentTableData} onEdit={handleEdit} onDelete={handleDelete} />
-
-      <div className="pagination">
-        <button className="pg-btn" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={pageSafe <= 1}>
-          Trước
-        </button>
-        <span className="pg-info">
-          Trang {pageSafe} / {pageCount}
-        </span>
-        <button className="pg-btn" onClick={() => setPage(p => Math.min(pageCount, p + 1))} disabled={pageSafe >= pageCount}>
-          Sau
-        </button>
-      </div>
-      
-      {showForm && (
-        <StudentForm
-          initial={editing}
-          onCancel={() => { setShowForm(false); setEditing(null); }}
-          onSubmit={(form) => {
-            if (form.id) {
-     
-              setData(prev => prev.map(p => (p.id === form.id ? { ...p, ...form } : p)));
-            } else {
-
-              const id = Date.now();
-              setData(prev => [{ ...form, id }, ...prev]);
-            }
-            setShowForm(false);
-            setEditing(null);
-          }}
-        />
-      )}
-    </section>
-  );
+    );
 }
