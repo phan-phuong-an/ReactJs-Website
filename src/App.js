@@ -41,7 +41,7 @@ function MainLayout() {
       setEducationElapsedSeconds(null); 
     }
 
-    if (prevTab === 'about' && activeTab === 'education') {
+    if (prevTab === 'about' && activeTab === 'education') { 
       const enter = aboutEnterTime || Date.now();
       const elapsedMs = Date.now() - enter;
       setEducationElapsedSeconds(Math.round(elapsedMs / 1000));

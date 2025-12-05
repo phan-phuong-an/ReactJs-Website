@@ -1,4 +1,4 @@
-const BASE = '';
+const BASE = 'http://api.sanglocsom2.dientoan.vn';
 let _token = localStorage.getItem('accessToken') || null;
 let _defaultIncludeCredentials = false;
 
@@ -10,7 +10,7 @@ function buildUrl(path, params) {
 }
 
 function buildHeaders(hasJsonbody = true) {
-    const headers = {};
+    const headers = {}; 
     if (hasJsonbody) headers['Content-Type'] = 'application/json';
     if (_token) headers['Authorization'] = `Bearer ${_token}`;
     return headers;
@@ -56,12 +56,11 @@ async function request(method, path, { params, body, includeCredentials } = {}) 
         const err = new Error('Network response was not ok');
         err.status = resp.status;
         err.data = data;
-        // attach Retry-After header if present
         const ra = resp.headers.get('Retry-After') || resp.headers.get('retry-after');
         if (ra) err.retryAfter = ra;
         throw err;
     }
-
+ 
 
 
     return { data, status: resp.status, headers: resp.headers };

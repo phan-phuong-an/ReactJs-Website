@@ -129,7 +129,7 @@ export default function Login({ onSuccess }) {
                         </form>
                     </div>
                 </div>
-            </div>
+            </div> 
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './Modal.css'; // Import CSS
+import './Modal.css'; 
 const getBoolValue = (value) => {
     if (value === 'Nam' || value === true || value === 'Đạt') return true;
     if (value === 'Nữ' || value === false || value === 'Cần theo dõi') return false;
@@ -17,11 +17,22 @@ const parseDate = (dateString) => {
 
 const initialFormState = {
     id: null,
-    name: '', birthday: null, gender: '', address: '', months: 0, 
-    ispasses: true, description: '',
-    parentname: '', phone: '',
-    surveyby: '', surveyplace: '', surveyNote: '',
-    formName: '', orgName: '', periodName: '',
+    personId: null,
+    name: '',
+    birthday: null, 
+    gender: '', 
+    address: '', 
+    months: 0, 
+    ispasses: true, 
+    description: '',
+    parentname: '', 
+    phone: '',
+    surveyby: '', 
+    surveyplace: '', 
+    surveyNote: '',
+    formName: '', 
+    orgName: '', 
+    periodName: '',
 };
 
 export default function StudentForm({ initial = null, onCancel, onSubmit }) {
@@ -32,6 +43,7 @@ export default function StudentForm({ initial = null, onCancel, onSubmit }) {
         if (initial) {
             setForm({
                 id: initial.id ?? null,
+                personId: initial.personId ?? null,
                 name: initial.name ?? '',
                 birthday: parseDate(initial.birthday || initial.time), 
                 gender: getBoolValue(initial.gender), 
@@ -78,12 +90,16 @@ export default function StudentForm({ initial = null, onCancel, onSubmit }) {
         const dataToSubmit = {
             ...form,
           
-            birthday: form.birthday ? form.birthday.toISOString().split('T')[0] : null,
+            birthday: form.birthday 
+            ? new Date(form.birthday.getTime() - (form.birthday.getTimezoneOffset() * 60000)).toISOString().split('T')[0] 
+            : null,
     
             ispasses: getBoolValue(form.ispasses),
             gender: getBoolValue(form.gender),
 
-            formName: undefined, orgName: undefined, periodName: undefined,
+            formName: undefined, 
+            orgName: undefined, 
+            periodName: undefined,
         };
         
         onSubmit(dataToSubmit); 

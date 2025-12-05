@@ -15,6 +15,7 @@ const formatDate = (value) => {
 const normalizeNumber = (item) => {
     return {
         id: item.id,
+        personId: item.personId || item.studentId || 0,
         name: item.name || 'Chưa cập nhật',
         birthday: item.birthday || '',
         gender: item.gender ? 'Nam' : 'Nữ',
@@ -106,14 +107,83 @@ export default function StudentManagement() {
         }
     };
 
-    const handleFormSubmit = async (formData) => {
-        console.log("Dữ liệu gửi đi:", formData);
+   // Thay thế hàm handleFormSubmit cũ bằng hàm này trong StudentManagement.js
+
+const handleFormSubmit = async (formData) => {
+    setLoading(true);
+    try {
+        // 1. Chuẩn bị dữ liệu cho object "instance" mà BE yêu cầu
+        // Lưu ý: BE dùng tên biến chữ thường (lowercase) cho các khóa ngoại lai
+        const instanceData = {
+            // Nếu có ID thì gán vào, không thì thôi
+            ...(formData.id && { id: formData.id }),
+            
+            // Mapping các trường dữ liệu từ Form sang chuẩn của BE
+            personid: formData.personId || null, 
+            name: formData.name,
+            birthday: formData.birthday,
+            gender: formData.gender, // true/false
+            address: formData.address,
+            months: formData.months,
+            parentname: formData.parentname,
+            phone: formData.phone,
+            
+            // Các trường thông tin phiếu/đợt
+            formid: formData.formId || 1,      // Backend yêu cầu formid (chữ thường)
+            periodid: formData.periodId || 1,  // Backend yêu cầu periodid
+            orgunitid: formData.orgUnitId || 1,// Backend yêu cầu orgunitid
+            
+            // Các trường kết quả
+            ispasses: formData.ispasses === true,
+            description: formData.description || '',
+            surveyby: formData.surveyby || '',
+            surveyplace: formData.surveyplace || '',
+            
+            // Backend nhận "surveyNote" hoặc "surveynote" đều được, nhưng map đúng key instance.surveyNote
+            surveyNote: formData.surveyNote || '', 
+        };
+
+        // 2. Tạo Payload đúng cấu trúc { instance: {}, values: [] }
+        const payload = {
+            instance: instanceData,
+            values: [] // Gửi mảng rỗng nếu không có giá trị chi tiết, để tránh lỗi destructuring ở BE
+        };
+
+        console.log("Payload gửi đi (Fix): ", JSON.stringify(payload, null, 2));
         
+        // 3. Gọi API
+        // Dựa vào file Router BE: router.put('/:id') là update, router.post('/') là create
+        let response;
+        
+        if (formData.id && formData.id !== 0) {
+            // --- TRƯỜNG HỢP CẬP NHẬT (PUT) ---
+            // Gọi vào đường dẫn có ID: /api/forminstances/:id
+            response = await apiFetch.put(`/api/forminstances/${formData.id}`, payload);
+        } else {
+            // --- TRƯỜNG HỢP THÊM MỚI (POST) ---
+            // Gọi vào đường dẫn gốc: /api/forminstances
+            response = await apiFetch.post('/api/forminstances', payload);
+        }
+
+        console.log("Kết quả trả về: ", response);
+
+        // Thành công
         setShowForm(false);
         setEditing(null);
+        alert(formData.id ? 'Cập nhật thành công!' : 'Thêm mới thành công!');
         
-        await fetchData(formData.id ? page : 1);
-    };
+        // Load lại dữ liệu trang 1
+        setPage(1);
+        await fetchData(1);
+
+    } catch (err) {
+        console.error("Lỗi khi submit: ", err);
+        const message = err.data && err.data.message ? err.data.message : err.message;
+        alert(`Lỗi hệ thống: ${message}`);
+    } finally {
+        setLoading(false);
+    }
+};
 
     const renderActions = (row) => (
         <td style={{ textAlign: 'center' }}>
@@ -173,6 +243,7 @@ export default function StudentManagement() {
                             <th style={{ width: '8%' }}>Hành động</th> 
                         </tr>
                     </thead>
+
                     <tbody>
                         {filteredData.length === 0 && !loading ? (
                             <tr>
@@ -235,7 +306,6 @@ export default function StudentManagement() {
                     </tbody>
                 </table>
             </div>
-
 
             <div className="pagination">
                 <button className="page-btn" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Trước</button>

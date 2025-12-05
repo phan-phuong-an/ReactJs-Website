@@ -63,8 +63,8 @@
 }
 
 .avatar {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.08);
@@ -78,7 +78,7 @@
 
 .divider {
     height: 1px;
-    background: rgba(255,255,255,0.03);
+    background: rgba(254, 252, 252, 0.3);
     margin: 8px 0 12px;
     border-radius: 2px;
 }
