@@ -11,81 +11,45 @@
   --warning-text: #664d03;
 }
 
-.dashboard-container {
-  padding: 20px;
-  margin-top: -26px;
+/* Scoped base font-size for Student Management */
+.sm-root {
+  --bs-body-font-size: 13px; /* Bootstrap component font size */
+  font-size: 13px;           /* Fallback for custom elements */
+}
+
+.sm-root .table,
+.sm-root .card-body,
+.sm-root .form-control,
+.sm-root .form-select,
+.sm-root .input-group-text,
+.sm-root .btn {
+  font-size: 13px;
+}
+
+.dashboard-container { /* legacy class kept for compatibility; no forced width/height */
+  padding: 0;
   background-color: var(--bg-body);
-  width: 200%;
-  height: 1000px;
+  box-sizing: border-box;
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Ensure dashboard content stretches full width of the parent .content area */
-.dashboard-container {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.dashboard-toolbar,
-.table-wrapper {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-.dashboard-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg-card);
-  padding: 15px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  margin-bottom: 20px;
-  height: 45px;
-  width: 96%;
-}
-
-.search-box {
-  position: relative;
-  width: 300px;
-}
-
-.search-box input {
-  width: 80%;
-  height: 5px;
-  padding: 10px 10px 10px 35px;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.search-box input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
-}
-
-.search-icon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #adb5bd;
-}
-
-
-.table-wrapper {
+/* toolbar and table are now Bootstrap cards; keep generic helpers only */
+.table-wrapper { /* legacy selector; now wrapped by .card */
   background: var(--bg-card);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   overflow-x: auto;
 }
 
+/* search now uses Bootstrap input-group, no custom rules needed */
+
+
+/* retained for backward compatibility */
+
 .dash-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .dash-table thead {
@@ -116,7 +80,7 @@
 .cell-title {
   font-weight: 700;
   color: var(--primary);
-  font-size: 15px;
+  font-size: 13px;
   margin-bottom: 4px;
 }
 
@@ -128,7 +92,7 @@
 }
 
 .cell-detail {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-light);
   line-height: 1.4;
 }
@@ -167,19 +131,7 @@
   cursor: pointer;
 }
 
-.btn_primary {
-  background: var(--primary-color);
-  text-align: center;
-  margin-left: 10px;;
-  margin-top: -4px;
-  border-radius: 8px;
-  border:rgba(13, 110, 253, 0.1);
-  height: 40px;
-  width: 100px;
-  font-size: 15px;
-  color: white;
-  margin-bottom: 10px;
-}
+/* add button now uses Bootstrap .btn; remove legacy .btn_primary */
 
 .btn_edit_delete {
   display: inline-flex;
@@ -248,6 +200,4 @@
   border-radius: 6px;
 }
 
-.dash-table td .btn + .btn {
-  margin-left: 8px;
-}
+.dash-table td .btn + .btn { margin-left: 8px; }

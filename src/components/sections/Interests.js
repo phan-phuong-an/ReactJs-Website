@@ -1,9 +1,9 @@
 export default function Interests()
 {
     return (
-        <div className="interests-container">
-            <h1>Interests</h1>
-            <p>Travel, play game,....</p>
+        <div className="container mt-5">
+            <h1 className = "mb-3">Interests</h1>
+            <p className = "mb-0">Travel, play game,....</p>
         </div>
     );
 }

@@ -19,7 +19,7 @@ import "./App.css";
 function MainLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("login");
+  const [activeTab, setActiveTab] = useState("studentmanagement");
   const [aboutEnterTime, setAboutEnterTime] = useState(null);
   const [educationElapsedSeconds, setEducationElapsedSeconds] = useState(null);
   const [selectedId, setSelectedId] = useState(null);

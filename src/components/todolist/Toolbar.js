@@ -2,13 +2,13 @@ import React from 'react';
 
 const Toolbar = ({ onAdd, onExport}) => {
     return (
-        <div className = "toolbar">
-            <div className = "toolbar-left">
-                <button className = "btn" onClick = {onAdd}>Thêm</button>
-                <button className = "btn" onClick = {onExport}>Xuất</button>
+        <div className="d-flex justify-content-between align-items-center mb-3 p-2">
+            <div className="d-flex gap-2">
+                <button className="btn btn-primary" onClick={onAdd}>Thêm</button>
+                <button className="btn btn-outline-secondary" onClick={onExport}>Xuất</button>
             </div>
-
-            <div className = "toolbar-right">
+            <div>
+                {/* Toolbar right content */}
             </div>
         </div>
     );

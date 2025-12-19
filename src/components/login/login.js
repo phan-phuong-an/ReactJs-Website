@@ -72,64 +72,83 @@ export default function Login({ onSuccess }) {
     };
 
     return (
-        <div className="login-layout">
-            <div className="login-card">
-                <div className="login-left">
-                    <img src={Illus} alt="Illustration" className="login-illus" />
-                </div>
+        <div className="container py-5">
+            <div className="row justify-content-center mt-5">
+                <div className="col-lg-8 col-xl-7">
+                    <div className="row g-0 shadow rounded overflow-hidden bg-white">
+                        <div className="col-md-6 d-none d-md-block bg-light">
+                            <img
+                                src={Illus}
+                                alt="Illustration"
+                                className="img-fluid w-100 h-100"
+                                style={{ objectFit: 'cover' }}
+                            />
+                        </div>
 
-                <div className="login-right">
-                    <div className="login-content">
-                        <h2 className="login-title">Member Login</h2>
-                        <p className="login-sub">Sign in to your account</p>
+                        <div className="col-md-6 p-4 p-lg-5">
+                            <h2 className="h4 mb-1">Member Login</h2>
+                            <p className="text-muted mb-4">Sign in to your account</p>
 
-                        {error && <div className="login-error">{error}</div>}
+                            {error && (
+                                <div className="alert alert-danger py-2" role="alert">
+                                    {error}
+                                </div>
+                            )}
 
-                        <form className="login-form" onSubmit={submit}>
-                            <label className="field-label" htmlFor="userid">
-                                <input
-                                    id = "userid"
-                                    type = "text"
-                                    placeholder = "User ID"
-                                    value = {userid}
-                                    onChange={(e) => {
-                                        setUserid(e.target.value);
-                                        setError(null);
-                                    }}
-                                    required
-                                />
-                            </label>
+                            <form onSubmit={submit} noValidate>
+                                <div className="mb-3">
+                                    <label htmlFor="userid" className="form-label">User ID</label>
+                                    <input
+                                        id="userid"
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Enter your user ID"
+                                        value={userid}
+                                        onChange={(e) => {
+                                            setUserid(e.target.value);
+                                            setError(null);
+                                        }}
+                                        required
+                                        autoComplete="username"
+                                    />
+                                </div>
 
-                            <label className="field-label" htmlFor="password">
-                                <input
-                                    id = "password"
-                                    type = "password"
-                                    placeholder = "Password"
-                                    value = {password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value);
-                                        setError(null);
-                                    }}
-                                    required
-                                    aria-label="Password"
-                                />
-                            </label>
+                                <div className="mb-3">
+                                    <label htmlFor="password" className="form-label">Password</label>
+                                    <input
+                                        id="password"
+                                        type="password"
+                                        className="form-control"
+                                        placeholder="Enter your password"
+                                        value={password}
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            setError(null);
+                                        }}
+                                        required
+                                        aria-label="Password"
+                                        autoComplete="current-password"
+                                    />
+                                </div>
 
-                            <div className="login-actions">
-                                <button type="submit" className="btn btn-primary" disabled={loading}>
-                                    {loading ? 'Logging in...' : 'Login'}
-                                </button>
-                            </div>
-
-                            <div className="login-footer">
-                                <button type="button" className="forgot" onClick={() => {}}>
-                                    Forgot Username / Password?
-                                </button>
-                            </div>
-                        </form>
+                                    <div className="mt-3">
+                                        <button type="submit" className="btn btn-primary w-100 d-block rounded-3" disabled={loading}>
+                                        {loading && (
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        )}
+                                        {loading ? 'Logging in...' : 'Login'}
+                                    </button>
+                                        <div className="text-center mt-2">
+                                            <button type="button" className="btn btn-link p-0 text-decoration-none" onClick={() => {}}>
+                                                Forgot Username / Password?
+                                            </button>
+                                        </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
     );
 }

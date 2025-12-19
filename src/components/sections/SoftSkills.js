@@ -3,14 +3,14 @@ import './SoftSkills.css';
 export default function SoftSkills() 
 {
     return (
-        <div className="softskills-container">
-            <h2>Soft Skills</h2>
+        <div className="container mt-5">
+            <h2 className = "mb-4">Soft Skills</h2>
             <ul>
-                <li className="softskill-iteam">Team Work</li>
-                <li className="softskill-iteam">Communication</li>
-                <li className="softskill-iteam">Adaptability</li>
-                <li className="softskill-iteam">Problem Solving</li>
-                <li className="softskill-iteam">Time Management</li>
+                <li className="mb-2">Team Work</li>
+                <li className="mb-2">Communication</li>
+                <li className="mb-2">Adaptability</li>
+                <li className="mb-2">Problem Solving</li>
+                <li className="mb-2">Time Management</li>
             </ul>
         </div>
     );

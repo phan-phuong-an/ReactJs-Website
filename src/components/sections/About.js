@@ -23,11 +23,11 @@ export default function About() {
   }, []);
  
   return (
-    <div className="about-container">
-      <h1>Phan Thi Phuong An</h1>
-  <div className="clock">Current time: {time.toLocaleTimeString()}</div>
-  <div className="contact">Ho Chi Minh   - 0776593619   - phanthiphuongan1412@gmail.com</div>
-      <p>
+    <div className = "container mt-5">
+      <h1 className = "mb-3">Phan Thi Phuong An</h1>
+      <div className = "clock mb-2 text-muted small">Current time: {time.toLocaleTimeString()}</div>
+      <div className = "contact mb-4 text-muted small">Ho Chi Minh   - 0776593619   - phanthiphuongan1412@gmail.com</div>
+      <p className = "lh-1g text-justify">
         Software engineering is the process of designing, developing, and maintaining software systems in a structured and efficient way. 
         It combines technical knowledge with problem-solving skills to create applications that meet users’ needs.
         Software engineers use programming languages, frameworks, and tools to build reliable and scalable solutions. 
@@ -37,4 +37,6 @@ export default function About() {
       </p>
     </div>
   );
+
+  
 }

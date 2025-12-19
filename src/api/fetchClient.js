@@ -12,7 +12,10 @@ function buildUrl(path, params) {
 function buildHeaders(hasJsonbody = true) {
     const headers = {}; 
     if (hasJsonbody) headers['Content-Type'] = 'application/json';
-    if (_token) headers['Authorization'] = `Bearer ${_token}`;
+    
+    const token = localStorage.getItem('accessToken');
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    
     return headers;
 }
 
@@ -53,6 +56,16 @@ async function request(method, path, { params, body, includeCredentials } = {}) 
         if (resp.status === 304) {
             return { data: [], status: 200, headers: resp.headers };
         }
+        
+        if (resp.status === 401 || resp.status === 403) {
+            _token = null;
+            localStorage.removeItem('accessToken');
+
+            alert('Phiên làm việc của bạn đã hết hạn. Vui lòng đăng nhập lại.');
+            window.location.href = '/login';
+            return;
+        }
+
         const err = new Error('Network response was not ok');
         err.status = resp.status;
         err.data = data;
@@ -61,7 +74,6 @@ async function request(method, path, { params, body, includeCredentials } = {}) 
         throw err;
     }
  
-
 
     return { data, status: resp.status, headers: resp.headers };
 }
@@ -98,4 +110,25 @@ export const apiFetch = {
     },
 };
 
-export default apiFetch;
+export const fetchClient = async (url, options = {}) => {
+    const token = localStorage.getItem('accessToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers,
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, { ...options, headers });
+
+    if(response.status === 401 || response.status === 403) {
+        localStorage.removeItem('accessToken');
+        return null;
+    }
+
+    return response;
+};
+
+export default apiFetch;  

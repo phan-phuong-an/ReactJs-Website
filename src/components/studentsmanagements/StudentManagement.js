@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback} from 'react';
 import './StudentManagement.css';
 import StudentForm from './StudentForm';
 import { apiFetch } from '../../api/fetchClient';
+import { useNavigate } from 'react-router-dom'; 
 import 'react-datepicker/dist/react-datepicker.css';
 
 
@@ -39,6 +40,7 @@ const normalizeNumber = (item) => {
 };
 
 export default function StudentManagement() {
+    const navigate = useNavigate();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -49,12 +51,15 @@ export default function StudentManagement() {
     const [pageSize] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const fetchData = async (currentPage = page) => {
+    const fetchData = useCallback(async (currentPage, currentPageSize) => {
         setLoading(true);
         setError(null);
 
            try {
-                const resp = await apiFetch.get('/api/forminstances/my', { page, limit: pageSize });
+                const resp = await apiFetch.get('/api/forminstances/my', { 
+                    page: currentPage,
+                    limit: currentPageSize, 
+                });
                    
                 const rootData = resp?.data?.data;
                 const rawList = Array.isArray(rootData?.data) ? rootData.data : [];
@@ -64,21 +69,24 @@ export default function StudentManagement() {
                 setData(normalizedList);
                 setTotalItems(total);
             
-
             } catch (err) {
                 const msg = err?.data?.message || 'Không thể tải dữ liệu';
                 if (err?.status === 401) setError('Phiên đăng nhập hết hạn.');
-                else setError(msg);
-                
+                else setError(msg);      
                 console.error("StudentManagement Error:", err);
             } finally {
                 setLoading(false);
             }
-        };
+        }, []);
 
     useEffect(() => {
-        fetchData();
-    }, [page, pageSize]);
+        fetchData(page, pageSize);
+        try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (_) {
+            window.scrollTo(0, 0);
+        }
+    }, [page, pageSize, fetchData]);
 
  
     const filteredData = useMemo(() => {
@@ -100,139 +108,137 @@ export default function StudentManagement() {
         setShowForm(true);
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm('Xác nhận xóa bản ghi này?')) {
-            console.log('Delete record with id:', id);
-            setData(prev => prev.filter(item => item.id !== id));
+    const handleDelete = async (id) => {
+        if (window.confirm('Xác nhận xóa ?')) {
+            try {
+                await apiFetch.delete(`/api/forminstances/${id}`); 
+                
+                setData(prev => prev.filter(item => item.id !== id));
+                
+                alert("Đã xóa thành công!");
+            } catch (error) {
+                console.error("Lỗi khi xóa:", error);
+                alert("Không thể xóa bản ghi này.");
+            }
         }
     };
-
-   // Thay thế hàm handleFormSubmit cũ bằng hàm này trong StudentManagement.js
 
 const handleFormSubmit = async (formData) => {
     setLoading(true);
     try {
-        // 1. Chuẩn bị dữ liệu cho object "instance" mà BE yêu cầu
-        // Lưu ý: BE dùng tên biến chữ thường (lowercase) cho các khóa ngoại lai
         const instanceData = {
-            // Nếu có ID thì gán vào, không thì thôi
             ...(formData.id && { id: formData.id }),
             
-            // Mapping các trường dữ liệu từ Form sang chuẩn của BE
             personid: formData.personId || null, 
-            name: formData.name,
+            name: (formData.name || '').substring(0, 255),
             birthday: formData.birthday,
-            gender: formData.gender, // true/false
-            address: formData.address,
+            gender: formData.gender, 
+            address: (formData.address || '').substring(0, 255),
             months: formData.months,
-            parentname: formData.parentname,
-            phone: formData.phone,
+            parentname: (formData.parentname || '').substring(0, 255),
+            phone: (formData.phone || '').substring(0, 255),
             
-            // Các trường thông tin phiếu/đợt
-            formid: formData.formId || 1,      // Backend yêu cầu formid (chữ thường)
-            periodid: formData.periodId || 1,  // Backend yêu cầu periodid
-            orgunitid: formData.orgUnitId || 1,// Backend yêu cầu orgunitid
+            formid: formData.formId || 1,      
+            periodid: formData.periodId || 1,  
+            orgunitid: formData.orgUnitId || 1,
             
-            // Các trường kết quả
             ispasses: formData.ispasses === true,
-            description: formData.description || '',
-            surveyby: formData.surveyby || '',
-            surveyplace: formData.surveyplace || '',
-            
-            // Backend nhận "surveyNote" hoặc "surveynote" đều được, nhưng map đúng key instance.surveyNote
-            surveyNote: formData.surveyNote || '', 
+            description: (formData.description || '').substring(0, 255),
+            surveyby: (formData.surveyby || '').substring(0, 255),
+            surveyplace: (formData.surveyplace || '').substring(0, 255),   
         };
 
-        // 2. Tạo Payload đúng cấu trúc { instance: {}, values: [] }
         const payload = {
             instance: instanceData,
-            values: [] // Gửi mảng rỗng nếu không có giá trị chi tiết, để tránh lỗi destructuring ở BE
+            values: [] 
         };
-
-        console.log("Payload gửi đi (Fix): ", JSON.stringify(payload, null, 2));
         
-        // 3. Gọi API
-        // Dựa vào file Router BE: router.put('/:id') là update, router.post('/') là create
         let response;
-        
         if (formData.id && formData.id !== 0) {
-            // --- TRƯỜNG HỢP CẬP NHẬT (PUT) ---
-            // Gọi vào đường dẫn có ID: /api/forminstances/:id
             response = await apiFetch.put(`/api/forminstances/${formData.id}`, payload);
-        } else {
-            // --- TRƯỜNG HỢP THÊM MỚI (POST) ---
-            // Gọi vào đường dẫn gốc: /api/forminstances
+            await fetchData(page, pageSize); 
+
+        } else {  
             response = await apiFetch.post('/api/forminstances', payload);
+            setPage(1);
+            await fetchData(1, pageSize);
         }
 
         console.log("Kết quả trả về: ", response);
-
-        // Thành công
         setShowForm(false);
         setEditing(null);
         alert(formData.id ? 'Cập nhật thành công!' : 'Thêm mới thành công!');
-        
-        // Load lại dữ liệu trang 1
-        setPage(1);
-        await fetchData(1);
 
     } catch (err) {
         console.error("Lỗi khi submit: ", err);
         const message = err.data && err.data.message ? err.data.message : err.message;
-        alert(`Lỗi hệ thống: ${message}`);
+        if (message.includes("value too long")) {
+            alert('Dữ liệu nhập vào quá dài. Vui lòng kiểm tra lại các trường thông tin.');
+
+        } else {
+            alert(`Lỗi hệ thống: ${message}`);
+        }
+    
     } finally {
         setLoading(false);
     }
 };
 
     const renderActions = (row) => (
-        <td style={{ textAlign: 'center' }}>
-            <div className ="btn_eit_delete">
-                <button className="btn_edit" onClick={() => handleEdit(row)}>
-                    Sửa
-                </button>
-                <button className="btn_delete" onClick={() => handleDelete(row.id)}>
-                    Xóa
-                </button>
+        <td className="text-center">
+            <div className="btn-group btn-group-sm" role="group" aria-label="Actions">
+                <button className="btn btn-outline-secondary" onClick={() => handleEdit(row)}>Sửa</button>
+                <button className="btn btn-outline-danger" onClick={() => handleDelete(row.id)}>Xóa</button>
             </div>
         </td>
     );
 
     return (
-        <div className="dashboard-container">
-            <div className="dashboard-toolbar">
-                <h2 style={{ margin: 0, color: '#333' }}>Student Sàng lọc</h2>
+        <div className="sm-root container-fluid py-3">
+            <div className="card shadow-sm mb-3">
+                <div className="card-body d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                    <div className="d-flex align-items-center gap-3">
+                        <h2 className="h4 mb-0">Student Sàng lọc</h2>
+                    </div>
 
-                <div className="search-box">
-                    <span className="search-icon" aria-hidden="true">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </span>
-                    <input 
-                        type="text" 
-                        placeholder="Tìm kiếm..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                    <div className="ms-auto" style={{maxWidth: 320, width: '100%'}}>
+                        <div className="input-group input-group-sm">
+                            <span className="input-group-text" id="search-addon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input 
+                                type="text" 
+                                className="form-control"
+                                placeholder="Tìm kiếm..." 
+                                aria-label="Tìm kiếm"
+                                aria-describedby="search-addon"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {loading && <p style={{ fontStyle: 'italic', color: '#666' }}>Đang đồng bộ dữ liệu...</p>}
-            {error && <p style={{ color: '#dc3545' }}>Lỗi: {error}</p>}
-            
-             
-                     <button 
-                    className="btn_primary" 
+            {loading && <p className="text-muted fst-italic">Đang đồng bộ dữ liệu...</p>}
+            {error && <p className="text-danger">Lỗi: {error}</p>}
+
+            <div className="d-flex justify-content-right mb-3">
+                <button 
+                    className="btn btn-primary"
+                    style={{ width: "140px" , height: "30px" }}
                     onClick={() => { setShowForm(true); setEditing(null); }}
                 >
-                    Thêm mới 
+                    Thêm mới
                 </button>
-            
+            </div>
 
-            <div className="table-wrapper">
-                <table className="dash-table">
+            <div className="card shadow-sm">
+                <div className="table-responsive">
+                <table className="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th style={{ width: '18%' }}>Hồ sơ Trẻ</th>
@@ -247,7 +253,7 @@ const handleFormSubmit = async (formData) => {
                     <tbody>
                         {filteredData.length === 0 && !loading ? (
                             <tr>
-                                <td colSpan={6} style={{ textAlign: 'center', padding: '30px', color: '#999' }}>
+                                <td colSpan={6} className="text-center py-4 text-muted">
                                     Không có dữ liệu hiển thị
                                 </td>
                             </tr>
@@ -281,7 +287,7 @@ const handleFormSubmit = async (formData) => {
                                     </td>
 
                                     <td>
-                                        <span className={`badge ${row.isPass ? 'badge-pass' : 'badge-fail'}`}>
+                                        <span className={`badge ${row.isPass ? 'bg-success' : 'bg-warning text-dark'}`}>
                                             {row.statusText}
                                         </span>
                                         <div 
@@ -305,14 +311,21 @@ const handleFormSubmit = async (formData) => {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
-            <div className="pagination">
-                <button className="page-btn" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Trước</button>
-                <span style={{ fontSize: '14px', color: '#555' }}>
+            <div className="d-flex justify-content-end align-items-center gap-2 py-3">
+                <button className="btn btn-light btn-sm" disabled={page <= 1} onClick={() => {
+                    setPage(p => Math.max(1, p - 1));
+                    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) { window.scrollTo(0, 0); }
+                }}>Trước</button>
+                <span className="text-secondary small">
                     Trang {page} / {pageCount} (Tổng {totalItems})
                 </span>
-                <button className="page-btn" disabled={page >= pageCount} onClick={() => setPage(p => p + 1)}>Sau</button>
+                <button className="btn btn-light btn-sm" disabled={page >= pageCount} onClick={() => {
+                    setPage(p => Math.min(pageCount, p + 1));
+                    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) { window.scrollTo(0, 0); }
+                }}>Sau</button>
             </div>
 
             {showForm && (
